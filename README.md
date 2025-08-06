@@ -13,7 +13,8 @@ This version includes:
 
 ## 📄 Reference
 
-**Fischer F. C.*, Thackray C., Ferguson N., Chicoine C., Skende O., Hu Z., Zhu Y., Slitt. A., Sunderland E.** (2025). *Understanding Mechanisms of PFAS Absorption, Distribution, and Elimination using a Physiologically Based Toxicokinetic Model*. Environmental Science & Technology.  
+**Fischer F. C.*, Thackray C., Ferguson N., Chicoine C., Skende O., Hu Z., Zhu Y., Slitt. A., Sunderland E.** (2025). *Understanding Mechanisms of PFAS Absorption, Distribution, and Elimination using a Physiologically Based Toxicokinetic Model*. Environmental Science & Technology 2025 59 (26), 13240-13250
+DOI: 10.1021/acs.est.5c05473 
 
 ---
 
