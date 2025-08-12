@@ -9,8 +9,6 @@ Fischer_PBPK_mouse <- function(
     single_oral_dose_mg_per_kg = 0, # single bolus oral dose at t = 0 (mg/kg)
     constant_oral_mg_per_kg_day = 0,# constant oral intake rate (mg/kg/day)
     constant_iv_mg_per_kg_day = 0,  # constant IV intake rate (mg/kg/day)
-    # Blood:Plasma ratio (from Crizer et al., 2024; https://doi.org/10.3390/toxics12090672)
-    B_to_P = 0.55,                  # Blood:Plasma concentration ratio (C_blood / C_plasma)
     pfas_param_path = "Standard_model/pfas_parameters.csv" #ensure path is correct
 ) {
   # --- Dependencies (namespaced for Shiny safety) ---
@@ -43,11 +41,11 @@ Fischer_PBPK_mouse <- function(
   times_sec <- seq(0, t_end_sec, by = 3600)  # 1-hour resolution
   
   # Body weight
-  bw_g  <- 30
+  bw_g  <- 30 #body weight (g)
   bw_kg <- bw_g / 1000
   
   # --- Physiological constants ---
-  V_body <- 30
+  V_body <- 30 #body volume (cm^3)
   Q_blood_liver      <- 0.021
   Q_blood_gut        <- 0.025
   Q_blood_kidneys    <- 0.0217
@@ -164,6 +162,14 @@ Fischer_PBPK_mouse <- function(
   V_water_blood <- V_blood - V_SA_blood - V_Glob_blood - V_SP_blood - V_ML_blood
   V_sorb_blood  <- V_blood - V_water_blood
   
+  # Volume fractions in plasma (unitless, L_constituent / L_plasma)
+  VF_water_plasma <- 0.92800
+  VF_SA_plasma    <- 0.02940
+  VF_Glob_plasma  <- 0.02000
+  VF_SP_plasma    <- 0.02210
+  VF_ML_plasma    <- 0.00170
+  # Note: VF_plasma (plasma fraction of whole blood) ~ 0.60 but cancels in the final formula
+  
   # Excretion
   Q_feces   <- 3.48/86400
   Q_urine   <- 2.26/86400
@@ -178,6 +184,7 @@ Fischer_PBPK_mouse <- function(
   K_gut     <- V_water_gut / V_gut_tissue + V_FABP_gut / V_gut_tissue * K_FABP + V_SP_gut / V_gut_tissue * K_SP + V_ML_gut / V_gut_tissue * K_ML + V_SA_gut / V_gut_tissue * K_SA
   K_kidneys <- V_water_kidneys / V_kidneys_tissue + V_SA_kidneys / V_kidneys_tissue * K_SA + V_FABP_kidneys / V_kidneys_tissue * K_FABP + V_SP_kidneys / V_kidneys_tissue * K_SP + V_ML_kidneys / V_kidneys_tissue * K_ML
   K_rest    <- V_water_rest / V_rest_tissue + V_FABP_rest / V_rest_tissue * K_FABP + V_SP_rest / V_rest_tissue * K_SP + V_ML_rest / V_rest_tissue * K_ML + V_SA_rest / V_rest_tissue * K_SA
+  K_plasma  <- VF_water_plasma + VF_SA_plasma * K_SA + VF_Glob_plasma * K_Glob + VF_SP_plasma * K_SP + VF_ML_plasma * K_ML
   
   # Free fractions
   f_free_blood    <- 1/(1 + K_blood    * V_sorb_blood    / V_water_blood)
@@ -407,7 +414,7 @@ Fischer_PBPK_mouse <- function(
   res$time_h <- res$time / 3600
   # Blood (central only)
   C_blood <- total_conc(res$C_free_blood, res$C_bound_blood, V_water_blood, V_sorb_blood, V_blood)
-  C_plasma <- C_blood / B_to_P  # convert blood to plasma concentration via B:P ratio
+  C_plasma <- C_blood * (K_plasma / K_blood)  # convert blood to plasma concentration via composition-based conversion
   # Liver (tissue only)
   C_liver <- total_conc(res$C_free_liver, res$C_bound_liver, V_water_liver, V_sorb_liver, V_liver)
   # Kidneys (tissue)
@@ -432,8 +439,8 @@ Fischer_PBPK_mouse <- function(
 
 ########## EXAMPLE USAGE ##############
 # 1) Single oral bolus, no repeats
-# Fischer_PBPK_mouse("PFBS", dose_mg_per_kg = 0, exposure_duration_days = 30, interval_hours = 24,
-#                    single_oral_dose_mg_per_kg = 10)
+Fischer_PBPK_mouse("PFBS", dose_mg_per_kg = 0, exposure_duration_days = 30, interval_hours = 24,
+                   single_oral_dose_mg_per_kg = 10)
 # 
 # # 2) Constant oral intake (5 mg/kg/day), no bolus/repeats
 # Fischer_PBPK_mouse("PFBS", dose_mg_per_kg = 0, exposure_duration_days = 30, interval_hours = 24,
@@ -442,3 +449,4 @@ Fischer_PBPK_mouse <- function(
 # # 3) Constant IV intake (1 mg/kg/day) + daily oral (2 mg/kg per event)
 # Fischer_PBPK_mouse("PFBS", dose_mg_per_kg = 2, exposure_duration_days = 14, interval_hours = 24,
 #                    constant_iv_mg_per_kg_day = 1)
+

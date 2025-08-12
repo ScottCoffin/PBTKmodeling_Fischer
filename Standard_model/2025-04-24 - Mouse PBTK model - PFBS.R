@@ -207,14 +207,15 @@ C_free_blood_t0  = C_blood_t0 * f_free_blood * V_blood / V_water_blood  # Starti
 C_bound_blood_t0 = C_blood_t0 * f_bound_blood * V_blood / V_sorb_blood  # Starting bound concentration in blood (mg/cm3)
 
 # Single oral dose (set to "0" if not applicable)
-total_oral_dose    = 1000 * bw/1000 # mg per kg body weight
+#total_oral_dose    = 1000 * bw/1000 # mg per kg body weight
+total_oral_dose    = 0 * bw/1000 # mg per kg body weight
 C_gut_lumen_t0     = total_oral_dose / V_gut_lumen  # mg/cm3
 total_dose         = total_IV_dose + total_oral_dose
 
 # Constant intake (for diffusive uptake, set to "0" if not applicable)
 daily_IV_dose          = 0 * bw/1000/86400         # mg per kg body weight per second
 amount_in_blood        = daily_IV_dose             # intake of PFAS in blood (mg/s) 
-daily_oral_dose        = 0 * bw/1000/86400         # mg per kg body weight per second
+daily_oral_dose        = 30 * bw/1000/86400         # mg per kg body weight per second
 amount_in_gut          = daily_oral_dose           # daily oral doses (mg) 
 
 #### SIMULATION #####
