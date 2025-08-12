@@ -213,9 +213,9 @@ C_gut_lumen_t0     = total_oral_dose / V_gut_lumen  # mg/cm3
 total_dose         = total_IV_dose + total_oral_dose
 
 # Constant intake (for diffusive uptake, set to "0" if not applicable)
-daily_IV_dose          = 0 * bw/1000/84600         # mg per kg body weight per second
+daily_IV_dose          = 0 * bw/1000/86400         # mg per kg body weight per second
 amount_in_blood        = daily_IV_dose             # intake of PFAS in blood (mg/s) 
-daily_oral_dose        = 0 * bw/1000/84600         # mg per kg body weight per second
+daily_oral_dose        = 0 * bw/1000/86400         # mg per kg body weight per second
 amount_in_gut          = daily_oral_dose           # daily oral doses (mg) 
 
 #### SIMULATION #####
